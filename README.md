@@ -10,4 +10,12 @@ todo
 
 todo
 
+## Dev
+
+`$` `cd wallmount_display_frontend`
+
+`$` `yarn install`
+
+`$` `yarn run dev`
+
 
