@@ -4,12 +4,15 @@
 
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
+import Stats from "stats.js";
 
 const Player = function() {
   const loader = new THREE.ObjectLoader();
   let camera, scene, renderer, orbitControls;
   this.camera = this.scene = this.renderer = this.orbitControls = null;
   this.onRender = null;
+  this.stats = new Stats();
+  this.stats.showPanel(0); // 0: fps, 1: ms, 2: mb, 3+: custom
 
   let events = {};
 
@@ -21,6 +24,8 @@ const Player = function() {
   this.height = 500;
 
   this.load = function(json) {
+    dom.appendChild(this.stats.dom);
+
     renderer = this.renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setClearColor(0x000000);
     renderer.setPixelRatio(window.devicePixelRatio);
@@ -145,6 +150,8 @@ const Player = function() {
   const self = this;
 
   function animate(time) {
+    self.stats.begin();
+
     try {
       dispatch(events.update, { time: time, delta: time - prevTime });
     } catch (e) {
@@ -158,6 +165,8 @@ const Player = function() {
     renderer.render(scene, camera);
 
     prevTime = time;
+
+    self.stats.end();
   }
 
   this.play = function() {

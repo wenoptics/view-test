@@ -1,35 +1,43 @@
 <template>
-  <q-page class="flex flex-center">
-    <div ref="container" @mousemove="onMouseMove" @resize="onResize"></div>
+  <q-page class="column">
+    <div
+      id="container"
+      ref="container"
+      @mousemove="onMouseMove"
+      style="flex: 1"
+    ></div>
   </q-page>
 </template>
 
 <script>
 import * as THREE from "three";
 import Player from "components/ThreePlayer";
-
 let player = null;
 const mouse = new THREE.Vector2();
 const raycaster = new THREE.Raycaster();
+let container_rect = {};
+let group_controllable = null;
 
 export default {
   name: "PageIndex",
   methods: {
     onMouseMove(event) {
-      mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-      mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+      const { width, height, x, y } = container_rect;
+      mouse.x = ((event.clientX - x) / width) * 2 - 1;
+      mouse.y = -((event.clientY - y) / height) * 2 + 1;
       // eslint-disable-next-line no-console
+      // console.log(mouse);
     },
     onResize() {
-      const c = window;
-      player.setSize(c.innerWidth, c.innerHeight);
+      const { width, height } = container_rect = this.$refs["container"].getBoundingClientRect();
+      player.setSize(width, height);
     },
     raycast: function() {
       // update the picking ray with the camera and mouse position
       raycaster.setFromCamera(mouse, player.camera);
 
       // calculate objects intersecting the picking ray
-      var intersects = raycaster.intersectObjects(player.scene.children, false);
+      var intersects = raycaster.intersectObjects(group_controllable.children, false);
 
       for (var i = 0; i < intersects.length; i++) {
         intersects[i].object.material.color.set(0xff0000);
@@ -41,16 +49,19 @@ export default {
     loader.load("statics/models/app.json", text => {
       player = new Player();
       player.load(JSON.parse(text));
-      player.setSize(window.innerWidth, window.innerHeight);
+      this.onResize();
       player.play();
       player.onRender = () => {
-        this.raycast();
+        //this.raycast();
       };
+
+      group_controllable = player.scene.getChildByName("controllable");
+
       window.player = player;
 
       this.$refs["container"].appendChild(player.dom);
 
-      window.addEventListener("resize", this.onResize);
+      // window.addEventListener("resize", this.onResize);
     });
   }
   // mounted() {
