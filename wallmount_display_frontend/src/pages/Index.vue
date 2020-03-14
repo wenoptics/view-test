@@ -4,6 +4,7 @@
       id="container"
       ref="container"
       @mousemove="onMouseMove"
+      @click="raycast"
       style="flex: 1"
     ></div>
   </q-page>
