@@ -15,7 +15,8 @@
     "@quasar/extras": "^1.5.2",
     "axios": "^0.18.1",
     "quasar": "^1.9.8",
-    "stats.js": "^0.17.0"
+    "stats.js": "^0.17.0",
+    "three": "^0.114.0"
   },
   "devDependencies": {
     "@quasar/app": "^1.6.0",
