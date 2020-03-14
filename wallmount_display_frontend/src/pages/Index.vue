@@ -14,7 +14,11 @@ import * as THREE from "three";
 import Player from "components/ThreePlayer";
 let player = null;
 const mouse = new THREE.Vector2();
+
 const raycaster = new THREE.Raycaster();
+raycaster.params.Line.threshold = 10;
+raycaster.params.Points.threshold = 10;
+
 let container_rect = {};
 let group_controllable = null;
 
@@ -37,11 +41,14 @@ export default {
       raycaster.setFromCamera(mouse, player.camera);
 
       // calculate objects intersecting the picking ray
-      var intersects = raycaster.intersectObjects(group_controllable.children, false);
+      var intersects = raycaster.intersectObjects(group_controllable.children, true);
 
       for (var i = 0; i < intersects.length; i++) {
-        intersects[i].object.material.color.set(0xff0000);
+        intersects[i].object.visibility = !intersects[i].object.visibility;
       }
+
+      // eslint-disable-next-line no-console
+      console.log(intersects);
     }
   },
   mounted() {
