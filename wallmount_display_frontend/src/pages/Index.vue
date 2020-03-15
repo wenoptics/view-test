@@ -13,6 +13,8 @@
 <script>
 import * as THREE from "three";
 import Player from "components/ThreePlayer";
+import axios from "axios";
+
 let player = null;
 const mouse = new THREE.Vector2();
 
@@ -26,6 +28,13 @@ let group_controllable = null;
 export default {
   name: "PageIndex",
   methods: {
+    showNotif(name, onoff) {
+      this.$q.notify({
+        message: name + " goes " + (onoff ? "on" : "off"),
+        caption: "",
+        color: "secondary"
+      });
+    },
     onMouseMove(event) {
       const { width, height, x, y } = container_rect;
       mouse.x = ((event.clientX - x) / width) * 2 - 1;
@@ -34,7 +43,9 @@ export default {
       // console.log(mouse);
     },
     onResize() {
-      const { width, height } = container_rect = this.$refs["container"].getBoundingClientRect();
+      const { width, height } = (container_rect = this.$refs[
+        "container"
+      ].getBoundingClientRect());
       player.setSize(width, height);
     },
     raycast: function() {
@@ -42,14 +53,38 @@ export default {
       raycaster.setFromCamera(mouse, player.camera);
 
       // calculate objects intersecting the picking ray
-      var intersects = raycaster.intersectObjects(group_controllable.children, true);
+      var intersects = raycaster.intersectObjects(
+        group_controllable.children,
+        true
+      );
 
-      for (var i = 0; i < intersects.length; i++) {
-        intersects[i].object.visibility = !intersects[i].object.visibility;
+      // for (var i = 0; i < intersects.length; i++) {
+      //   intersects[i].object.visibility = !intersects[i].object.visibility;
+      // }
+
+      const controlHost = "http://192.168.0.16:5000";
+      let _c, _obj;
+      if (intersects.length > 0) {
+        switch (intersects[0].object.name) {
+          case "Sphere_living_1":
+            _obj = intersects[0].object.children[0];
+            _obj.visible = !_obj.visible;
+            _c = _obj.visible ? "on" : "off";
+            this.showNotif("Living room light group", _obj.visible);
+            axios.get(controlHost + "/living/" + _c);
+            break;
+          case "Sphere_bedroom_1":
+            _obj = intersects[0].object.children[0];
+            _obj.visible = !_obj.visible;
+            _c = _obj.visible ? "on" : "off";
+            this.showNotif("Living room light group", _obj.visible);
+            axios.get(controlHost + "/bedroom/" + _c);
+            break;
+          default:
+            // eslint-disable-next-line no-console
+            console.log("clicked on", intersects[0].object.name);
+        }
       }
-
-      // eslint-disable-next-line no-console
-      console.log(intersects);
     }
   },
   mounted() {
@@ -65,9 +100,20 @@ export default {
 
       group_controllable = player.scene.getChildByName("controllable");
 
+      player.scene.scale.x = player.scene.scale.y = player.scene.scale.z = 2.48;
+      player.scene.position.x = -9.58;
+      player.scene.position.z = -11.36;
+
       window.player = player;
 
       this.$refs["container"].appendChild(player.dom);
+      window.addEventListener("touchstart", event => {
+        // eslint-disable-next-line no-console
+        const { width, height, x, y } = container_rect;
+        mouse.x = ((event.touches[0].clientX - x) / width) * 2 - 1;
+        mouse.y = -((event.touches[0].clientY - y) / height) * 2 + 1;
+        this.raycast();
+      });
 
       // window.addEventListener("resize", this.onResize);
     });
