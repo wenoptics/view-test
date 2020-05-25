@@ -9,7 +9,9 @@
   "private": true,
   "scripts": {
     "lint": "eslint --ext .js,.vue src",
-    "test": "echo \"No test specified\" && exit 0"
+    "test": "echo \"No test specified\" && exit 0",
+    "build": "quasar build",
+    "post-build": "cp scripts/start.sh dist/spa"
   },
   "dependencies": {
     "@quasar/extras": "^1.5.2",

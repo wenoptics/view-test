@@ -22,6 +22,8 @@ const raycaster = new THREE.Raycaster();
 raycaster.params.Line.threshold = 10;
 raycaster.params.Points.threshold = 10;
 
+const controlHost = "http://192.168.1.200:5000";
+
 let container_rect = {};
 let group_controllable = null;
 
@@ -62,7 +64,6 @@ export default {
       //   intersects[i].object.visibility = !intersects[i].object.visibility;
       // }
 
-      const controlHost = "http://192.168.0.16:5000";
       let _c, _obj;
       if (intersects.length > 0) {
         switch (intersects[0].object.name) {
@@ -103,6 +104,7 @@ export default {
       player.scene.scale.x = player.scene.scale.y = player.scene.scale.z = 2.48;
       player.scene.position.x = -9.58;
       player.scene.position.z = -11.36;
+      player.orbitControls.maxPolarAngle = Math.PI / 2;
 
       window.player = player;
 

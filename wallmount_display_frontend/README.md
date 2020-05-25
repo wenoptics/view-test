@@ -19,7 +19,8 @@ yarn run lint
 
 ### Build the app for production
 ```bash
-quasar build
+npm run build
+npm run post-build
 ```
 
 ### Customize the configuration
